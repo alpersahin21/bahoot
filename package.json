@@ -1,0 +1,23 @@
+{
+  "name": "bahoot",
+  "private": true,
+  "version": "1.0.0",
+  "description": "A Kahoot clone farewell game for Bahar 💕",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "latest",
+    "@nuxtjs/tailwindcss": "^6.12.1",
+    "nuxt": "^3.13.0"
+  },
+  "dependencies": {
+    "firebase": "^10.13.0",
+    "@vueuse/firebase": "^10.11.0",
+    "@vueuse/core": "^10.11.0"
+  }
+}

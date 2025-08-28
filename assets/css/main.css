@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gradient-to-br from-purple-600 to-pink-600 min-h-screen font-sans;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-white text-purple-600 font-bold py-3 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-purple-500 text-white font-bold py-3 px-8 rounded-xl shadow-lg hover:bg-purple-400 transition-all duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-2xl shadow-xl p-8;
+  }
+  
+  .answer-btn {
+    @apply w-full p-4 rounded-xl font-semibold text-left transition-all duration-200 transform hover:scale-105 shadow-md;
+  }
+  
+  .answer-red {
+    @apply bg-red-500 text-white hover:bg-red-400;
+  }
+  
+  .answer-blue {
+    @apply bg-blue-500 text-white hover:bg-blue-400;
+  }
+  
+  .answer-yellow {
+    @apply bg-yellow-500 text-white hover:bg-yellow-400;
+  }
+  
+  .answer-green {
+    @apply bg-green-500 text-white hover:bg-green-400;
+  }
+}
