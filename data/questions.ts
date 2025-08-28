@@ -14,7 +14,7 @@ export const questions: Question[] = [
     answers: ["Photography", "Reading", "Cooking", "Traveling"],
     correct: 0,
     photo: "bahar-hobby.jpg",
-    timeLimit: 20
+    timeLimit: 30
   },
   {
     id: 2,
@@ -22,7 +22,7 @@ export const questions: Question[] = [
     answers: ["Istanbul", "Paris", "New York", "Tokyo"],
     correct: 0,
     photo: "bahar-city.jpg",
-    timeLimit: 15
+    timeLimit: 30
   },
   {
     id: 3,
@@ -30,7 +30,7 @@ export const questions: Question[] = [
     answers: ["Blue", "Purple", "Pink", "Green"],
     correct: 1,
     photo: "bahar-color.jpg",
-    timeLimit: 10
+    timeLimit: 30
   },
   {
     id: 4,
@@ -38,7 +38,7 @@ export const questions: Question[] = [
     answers: ["Sings", "Dances", "Takes photos", "All of the above"],
     correct: 3,
     photo: "bahar-happy.jpg",
-    timeLimit: 20
+    timeLimit: 30
   },
   {
     id: 5,
@@ -46,7 +46,7 @@ export const questions: Question[] = [
     answers: ["Pizza", "Sushi", "Turkish Delight", "Pasta"],
     correct: 2,
     photo: "bahar-food.jpg",
-    timeLimit: 15
+    timeLimit: 30
   },
   {
     id: 6,
@@ -54,7 +54,7 @@ export const questions: Question[] = [
     answers: ["Happy", "Inspired", "Loved", "All of the above"],
     correct: 3,
     photo: "bahar-friends.jpg",
-    timeLimit: 15
+    timeLimit: 30
   },
   {
     id: 7,
@@ -62,7 +62,7 @@ export const questions: Question[] = [
     answers: ["Her smile", "Her kindness", "Her energy", "Everything"],
     correct: 3,
     photo: "bahar-best.jpg",
-    timeLimit: 20
+    timeLimit: 30
   },
   {
     id: 8,
@@ -70,7 +70,7 @@ export const questions: Question[] = [
     answers: ["Her jokes", "Her hugs", "Her presence", "Everything about her"],
     correct: 3,
     photo: "bahar-farewell.jpg",
-    timeLimit: 25
+    timeLimit: 30
   }
 ]
 

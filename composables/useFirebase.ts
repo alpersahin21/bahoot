@@ -106,7 +106,7 @@ export const useFirebase = () => {
     return Math.random().toString(36).substring(2, 10)
   }
 
-  const calculatePoints = (responseTime: number, maxTime: number = 20): number => {
+  const calculatePoints = (responseTime: number, maxTime: number = 30): number => {
     const timeBonus = Math.max(0, (maxTime - responseTime) / maxTime)
     return Math.round(1000 * (0.5 + 0.5 * timeBonus))
   }

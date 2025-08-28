@@ -68,16 +68,7 @@
       </div>
     </div>
 
-    <!-- Bahar's Message -->
-    <div v-if="final" class="mt-6 bg-pink-50 border border-pink-200 rounded-xl p-6 text-center">
-      <div class="text-pink-600 font-semibold mb-2">
-        💕 A Message from Bahar
-      </div>
-      <div class="text-gray-700 italic">
-        "Thank you all for this wonderful farewell game! You've made my heart so full of joy. 
-        I'll miss each and every one of you! Keep smiling and stay amazing! 🌟"
-      </div>
-    </div>
+
   </div>
 </template>
 

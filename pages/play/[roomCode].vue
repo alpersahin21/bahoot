@@ -92,7 +92,7 @@
             <div class="w-full bg-gray-200 rounded-full h-3">
               <div 
                 class="bg-gradient-to-r from-green-500 to-yellow-500 to-red-500 h-3 rounded-full transition-all duration-1000"
-                :style="{ width: `${(timeLeft / (currentQuestion.timeLimit || 20)) * 100}%` }"
+                :style="{ width: `${(timeLeft / (currentQuestion.timeLimit || 30)) * 100}%` }"
               ></div>
             </div>
           </div>
@@ -239,18 +239,22 @@ const startTimer = () => {
   
   // Calculate how much time has already passed since question started
   const elapsed = (Date.now() - gameState.value.questionStartTime) / 1000
-  const totalTime = currentQuestion.value.timeLimit || 20
-  timeLeft.value = Math.max(0, totalTime - elapsed)
+  const totalTime = currentQuestion.value.timeLimit || 30
+  timeLeft.value = Math.max(0, Math.ceil(totalTime - elapsed))
   
   if (timeLeft.value <= 0) return
   
   timerInterval = setInterval(() => {
-    timeLeft.value--
-    if (timeLeft.value <= 0) {
+    if (!gameState.value?.questionStartTime) return
+    const elapsed = (Date.now() - gameState.value.questionStartTime) / 1000
+    const remaining = Math.max(0, Math.ceil(totalTime - elapsed))
+    timeLeft.value = remaining
+    
+    if (remaining <= 0) {
       clearInterval(timerInterval!)
       timerInterval = null
     }
-  }, 1000)
+  }, 100)
 }
 
 const stopTimer = () => {
