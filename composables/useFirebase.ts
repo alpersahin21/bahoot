@@ -1,12 +1,14 @@
-import { getDatabase, ref, push, set, onValue, off, remove } from 'firebase/database'
+import { getDatabase, ref, push, set, onValue, off, remove, get, type Database } from 'firebase/database'
+import { useNuxtApp } from 'nuxt/app'
 
 export const useFirebase = () => {
   const { $database } = useNuxtApp()
+  const database = $database as Database
 
   const createRoom = async (hostName: string, questionCount: number = 5) => {
     try {
       const roomCode = generateRoomCode()
-      const roomRef = ref($database, `games/${roomCode}`)
+      const roomRef = ref(database, `games/${roomCode}`)
       
       await set(roomRef, {
         host: hostName,
@@ -27,7 +29,7 @@ export const useFirebase = () => {
   const joinRoom = async (roomCode: string, playerName: string) => {
     try {
       const playerId = generatePlayerId()
-      const playerRef = ref($database, `games/${roomCode}/players/${playerId}`)
+      const playerRef = ref(database, `games/${roomCode}/players/${playerId}`)
       
       await set(playerRef, {
         nickname: playerName,
@@ -46,7 +48,7 @@ export const useFirebase = () => {
 
   const updateGameState = async (roomCode: string, updates: any) => {
     try {
-      const gameRef = ref($database, `games/${roomCode}`)
+      const gameRef = ref(database, `games/${roomCode}`)
       await set(gameRef, updates)
     } catch (error) {
       console.error('Error updating game state:', error)
@@ -55,7 +57,7 @@ export const useFirebase = () => {
   }
 
   const listenToRoom = (roomCode: string, callback: (data: any) => void) => {
-    const roomRef = ref($database, `games/${roomCode}`)
+    const roomRef = ref(database, `games/${roomCode}`)
     onValue(roomRef, (snapshot) => {
       const data = snapshot.val()
       callback(data)
@@ -64,16 +66,31 @@ export const useFirebase = () => {
     return () => off(roomRef)
   }
 
-  const submitAnswer = async (roomCode: string, playerId: string, questionId: number, answer: number, responseTime: number) => {
+  const submitAnswer = async (roomCode: string, playerId: string, questionId: number, answer: number, responseTime: number, correctAnswer: number) => {
     try {
-      const playerRef = ref($database, `games/${roomCode}/players/${playerId}`)
-      const points = calculatePoints(responseTime)
+      const gameRef = ref(database, `games/${roomCode}`)
+      const playerRef = ref(database, `games/${roomCode}/players/${playerId}`)
+      
+      // Get current player data
+      const gameSnapshot = await get(gameRef)
+      const gameData = gameSnapshot.val()
+      const currentPlayer = gameData?.players?.[playerId]
+      
+      if (!currentPlayer) return
+      
+      // Calculate points only if answer is correct
+      const isCorrect = answer === correctAnswer
+      const questionPoints = isCorrect ? calculatePoints(responseTime) : 0
+      const newTotalScore = (currentPlayer.score || 0) + questionPoints
       
       await set(playerRef, {
+        ...currentPlayer,
         currentAnswer: answer,
         hasAnswered: true,
         responseTime,
-        points
+        questionPoints,
+        isCorrect,
+        score: newTotalScore
       })
     } catch (error) {
       console.error('Error submitting answer:', error)

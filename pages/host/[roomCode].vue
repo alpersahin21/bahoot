@@ -109,7 +109,10 @@
 </template>
 
 <script setup lang="ts">
-import { questions, getRandomQuestions } from '~/data/questions'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useRoute, navigateTo, createError } from 'nuxt/app'
+import { questions, getRandomQuestions } from '../../data/questions'
+import { useGameRoom } from '../../composables/useGameRoom'
 
 const route = useRoute()
 const roomCode = route.params.roomCode as string

@@ -1,4 +1,6 @@
-import type { Question } from '~/data/questions'
+import type { Question } from '../data/questions'
+import { ref, computed, readonly, onUnmounted } from 'vue'
+import { useFirebase } from './useFirebase'
 
 export interface GameState {
   host: string
@@ -7,6 +9,7 @@ export interface GameState {
   questionCount: number
   createdAt: number
   players: Record<string, Player>
+  questions?: Question[]
   currentQuestionData?: Question
   showResults?: boolean
   questionStartTime?: number
@@ -19,7 +22,8 @@ export interface Player {
   hasAnswered: boolean
   joinedAt: number
   responseTime?: number
-  points?: number
+  questionPoints?: number
+  isCorrect?: boolean
 }
 
 export const useGameRoom = (roomCode: string) => {
@@ -71,11 +75,18 @@ export const useGameRoom = (roomCode: string) => {
       status: isGameFinished ? 'finished' : 'playing',
       questionStartTime: isGameFinished ? null : Date.now(),
       showResults: false,
-      // Reset player answers for next question
+      // Reset player answers for next question but keep scores
       players: Object.fromEntries(
         Object.entries(gameState.value.players).map(([id, player]) => [
           id,
-          { ...player, currentAnswer: null, hasAnswered: false }
+          { 
+            ...player, 
+            currentAnswer: null, 
+            hasAnswered: false,
+            questionPoints: undefined,
+            isCorrect: undefined,
+            responseTime: undefined
+          }
         ])
       )
     }
@@ -95,10 +106,13 @@ export const useGameRoom = (roomCode: string) => {
   }
 
   const playerAnswer = async (playerId: string, answer: number) => {
-    if (!gameState.value || !gameState.value.questionStartTime) return
+    if (!gameState.value || !gameState.value.questionStartTime || !gameState.value.questions) return
+    
+    const currentQuestion = gameState.value.questions[gameState.value.currentQuestion]
+    if (!currentQuestion) return
     
     const responseTime = (Date.now() - gameState.value.questionStartTime) / 1000
-    await submitAnswer(roomCode, playerId, gameState.value.currentQuestion, answer, responseTime)
+    await submitAnswer(roomCode, playerId, gameState.value.currentQuestion, answer, responseTime, currentQuestion.correct)
   }
 
   const getLeaderboard = computed(() => {

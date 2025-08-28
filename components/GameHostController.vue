@@ -102,7 +102,7 @@
           @click="forceShowResults"
           class="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-400 transition-colors"
         >
-          ⏭️ Skip
+          ⏭️ Skip Timer
         </button>
       </div>
     </div>
@@ -133,8 +133,16 @@
               {{ player.score }} pts
             </div>
           </div>
-          <div v-if="player.hasAnswered && player.responseTime" class="text-xs text-gray-500 mt-1">
-            ⏱️ {{ player.responseTime.toFixed(1) }}s
+          <div v-if="player.hasAnswered" class="text-xs mt-1 flex items-center justify-between">
+            <span v-if="player.responseTime" class="text-gray-500">
+              ⏱️ {{ player.responseTime.toFixed(1) }}s
+            </span>
+            <span v-if="player.isCorrect === true" class="text-green-600 font-semibold">
+              ✅ +{{ player.questionPoints }}
+            </span>
+            <span v-else-if="player.isCorrect === false" class="text-red-600 font-semibold">
+              ❌ 0pts
+            </span>
           </div>
         </div>
       </div>
@@ -148,7 +156,8 @@
 </template>
 
 <script setup lang="ts">
-import type { GameState } from '~/composables/useGameRoom'
+import { ref, computed, watch, nextTick, onUnmounted } from 'vue'
+import type { GameState } from '../composables/useGameRoom'
 
 interface Props {
   roomCode: string

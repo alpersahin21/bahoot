@@ -99,8 +99,14 @@
 
           <!-- Answer Status -->
           <div v-if="currentPlayer?.hasAnswered" class="text-center mb-6">
-            <div class="text-green-600 font-bold text-xl">
-              ✅ Answer Submitted!
+            <div v-if="currentPlayer.isCorrect === true" class="text-green-600 font-bold text-xl mb-2">
+              ✅ Correct! +{{ currentPlayer.questionPoints }} points
+            </div>
+            <div v-else-if="currentPlayer.isCorrect === false" class="text-red-600 font-bold text-xl mb-2">
+              ❌ Incorrect! 0 points
+            </div>
+            <div v-else class="text-blue-600 font-bold text-xl mb-2">
+              📤 Answer Submitted!
             </div>
             <div class="text-gray-600">
               Waiting for other players...
@@ -178,7 +184,10 @@
 </template>
 
 <script setup lang="ts">
-import { questions } from '~/data/questions'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { useRoute, navigateTo, createError } from 'nuxt/app'
+import { questions } from '../../data/questions'
+import { useGameRoom } from '../../composables/useGameRoom'
 
 const route = useRoute()
 const roomCode = route.params.roomCode as string

@@ -124,6 +124,10 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
+import { navigateTo } from 'nuxt/app'
+import { useFirebase } from '../composables/useFirebase'
+
 const { createRoom, joinRoom } = useFirebase()
 
 // State

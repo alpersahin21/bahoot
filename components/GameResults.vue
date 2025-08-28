@@ -90,6 +90,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 interface Player {
   id: string
   nickname: string
@@ -111,13 +113,17 @@ const props = withDefaults(defineProps<Props>(), {
 
 // Computed
 const highestScore = computed(() => {
-  return props.players.length > 0 ? Math.max(...props.players.map(p => p.score)) : 0
+  if (props.players.length === 0) return 0
+  const scores = props.players.map(p => p.score || 0).filter(score => !isNaN(score))
+  return scores.length > 0 ? Math.max(...scores) : 0
 })
 
 const averageScore = computed(() => {
   if (props.players.length === 0) return 0
-  const total = props.players.reduce((sum, p) => sum + p.score, 0)
-  return Math.round(total / props.players.length)
+  const scores = props.players.map(p => p.score || 0).filter(score => !isNaN(score))
+  if (scores.length === 0) return 0
+  const total = scores.reduce((sum, score) => sum + score, 0)
+  return Math.round(total / scores.length)
 })
 
 // Methods

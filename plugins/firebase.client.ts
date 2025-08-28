@@ -1,17 +1,18 @@
-import { initializeApp } from 'firebase/app'
-import { getDatabase } from 'firebase/database'
+import { initializeApp, type FirebaseApp } from 'firebase/app'
+import { getDatabase, type Database } from 'firebase/database'
+import { defineNuxtPlugin, useRuntimeConfig } from 'nuxt/app'
 
 export default defineNuxtPlugin(() => {
   const config = useRuntimeConfig()
   
   const firebaseConfig = {
-    apiKey: config.public.firebaseApiKey,
-    authDomain: config.public.firebaseAuthDomain,
-    databaseURL: config.public.firebaseDatabaseURL,
-    projectId: config.public.firebaseProjectId,
-    storageBucket: config.public.firebaseStorageBucket,
-    messagingSenderId: config.public.firebaseMessagingSenderId,
-    appId: config.public.firebaseAppId
+    apiKey: config.public.firebaseApiKey as string,
+    authDomain: config.public.firebaseAuthDomain as string,
+    databaseURL: config.public.firebaseDatabaseURL as string,
+    projectId: config.public.firebaseProjectId as string,
+    storageBucket: config.public.firebaseStorageBucket as string,
+    messagingSenderId: config.public.firebaseMessagingSenderId as string,
+    appId: config.public.firebaseAppId as string
   }
 
   const app = initializeApp(firebaseConfig)
@@ -19,8 +20,8 @@ export default defineNuxtPlugin(() => {
 
   return {
     provide: {
-      firebase: app,
-      database
+      firebase: app as FirebaseApp,
+      database: database as Database
     }
   }
 })
