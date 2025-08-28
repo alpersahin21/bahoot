@@ -73,7 +73,7 @@ export const useGameRoom = (roomCode: string) => {
       ...gameState.value,
       currentQuestion: nextQuestionIndex,
       status: isGameFinished ? 'finished' : 'playing',
-      questionStartTime: isGameFinished ? null : Date.now(),
+      questionStartTime: isGameFinished ? undefined : Date.now(),
       showResults: false,
       // Reset player answers for next question but keep scores
       players: Object.fromEntries(

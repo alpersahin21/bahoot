@@ -218,9 +218,17 @@ const forceShowResults = () => {
 }
 
 const startTimer = () => {
-  if (!currentQuestion.value) return
+  if (!currentQuestion.value || !props.gameState.questionStartTime) return
   
-  timeLeft.value = currentQuestion.value.timeLimit || 20
+  // Calculate how much time has already passed
+  const elapsed = (Date.now() - props.gameState.questionStartTime) / 1000
+  const totalTime = currentQuestion.value.timeLimit || 20
+  timeLeft.value = Math.max(0, totalTime - elapsed)
+  
+  if (timeLeft.value <= 0) {
+    emit('showResults')
+    return
+  }
   
   timerInterval = setInterval(() => {
     timeLeft.value--
@@ -245,10 +253,17 @@ const stopTimer = () => {
 // Watch for question changes
 watch(() => props.gameState.currentQuestion, () => {
   stopTimer()
-  if (!props.gameState.showResults) {
+  if (!props.gameState.showResults && props.gameState.status === 'playing') {
     nextTick(() => startTimer())
   }
-}, { immediate: true })
+})
+
+// Watch for game status changes
+watch(() => props.gameState.status, (status) => {
+  if (status === 'playing' && !props.gameState.showResults) {
+    nextTick(() => startTimer())
+  }
+})
 
 watch(() => props.gameState.showResults, (showResults) => {
   if (showResults) {

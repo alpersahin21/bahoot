@@ -235,9 +235,14 @@ const submitAnswer = async (answerIndex: number) => {
 }
 
 const startTimer = () => {
-  if (!currentQuestion.value) return
+  if (!currentQuestion.value || !gameState.value?.questionStartTime) return
   
-  timeLeft.value = currentQuestion.value.timeLimit || 20
+  // Calculate how much time has already passed since question started
+  const elapsed = (Date.now() - gameState.value.questionStartTime) / 1000
+  const totalTime = currentQuestion.value.timeLimit || 20
+  timeLeft.value = Math.max(0, totalTime - elapsed)
+  
+  if (timeLeft.value <= 0) return
   
   timerInterval = setInterval(() => {
     timeLeft.value--
@@ -258,10 +263,18 @@ const stopTimer = () => {
 // Watch for game state changes
 watch(() => gameState.value?.currentQuestion, () => {
   stopTimer()
-  if (gameState.value?.status === 'playing' && !gameState.value?.showResults) {
+  if (gameState.value?.status === 'playing' && !gameState.value?.showResults && gameState.value?.questionStartTime) {
     nextTick(() => startTimer())
   }
-}, { immediate: true })
+})
+
+// Watch for question start time to sync timer
+watch(() => gameState.value?.questionStartTime, (startTime) => {
+  if (startTime && gameState.value?.status === 'playing' && !gameState.value?.showResults) {
+    stopTimer()
+    nextTick(() => startTimer())
+  }
+})
 
 watch(() => gameState.value?.showResults, (showResults) => {
   if (showResults) {
