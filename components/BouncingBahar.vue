@@ -5,7 +5,17 @@
       <div class="face-container">
         <!-- Placeholder for Bahar's photo - user can replace with actual image -->
         <div class="placeholder-face">
-          <img src="/assets/photos/bahar-face.png" alt="Bahar" class="face-image" />
+          <img 
+            v-if="!imageError"
+            src="/assets/photos/bahar-face.png" 
+            alt="Bahar" 
+            class="face-image"
+            @error="handleImageError"
+            @load="handleImageLoad"
+          />
+          <div v-else class="emoji-fallback">
+            🥰
+          </div>
         </div>
         <!-- When you have Bahar's photo, replace above with: -->
       </div>
@@ -13,8 +23,18 @@
   </div>
 </template>
 
-<script setup lang="ts">
-// No logic needed - pure CSS animation!
+<script setup>
+import { ref } from 'vue'
+
+const imageError = ref(false)
+
+const handleImageLoad = () => {
+  imageError.value = false
+}
+
+const handleImageError = () => {
+  imageError.value = true
+}
 </script>
 
 <style scoped>
@@ -56,6 +76,11 @@
 }
 
 .placeholder-face {
+  font-size: 32px;
+  filter: hue-rotate(10deg);
+}
+
+.emoji-fallback {
   font-size: 32px;
   filter: hue-rotate(10deg);
 }
