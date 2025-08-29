@@ -1,0 +1,15 @@
+# This folder is for Kahoot-style background music
+# Add these MP3 files:
+# - kahoot-lobby.mp3 (for waiting/lobby screens)
+# - kahoot-gameplay.mp3 (during questions)
+# - kahoot-results.mp3 (for leaderboard/results)
+
+# You can download Kahoot music from:
+# 1. YouTube to MP3 converters (search "Kahoot lobby music", "Kahoot thinking music")
+# 2. Freesound.org (search for upbeat quiz music)
+# 3. Create your own using the Kahoot style (upbeat, energetic, looping)
+
+# MP3 files should be:
+# - Compressed for web (under 5MB each)
+# - Good quality but not too large
+# - Looping-friendly (seamless when repeated)
