@@ -24,9 +24,17 @@ const currentGameState = computed(() => {
 })
 
 useHead({
-  title: 'Bahoot - A Farewell Game for Bahar 💕',
+  title: 'Bahoot - Bahar için özel veda oyunu 💕',
   meta: [
-    { name: 'description', content: 'A special Kahoot-style game created for Bahar' }
+    { name: 'description', content: 'Bahar için özel olarak hazırlanmış Kahoot tarzı oyun' }
   ]
 })
 </script>
+
+<style>
+/* Global styles - main.css'te tanımlananlar burada override edilebilir */
+body {
+  margin: 0;
+  padding: 0;
+}
+</style>
