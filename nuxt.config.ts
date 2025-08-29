@@ -1,10 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  // Tailwind'i geçici kapatıyoruz - çakışmaması için
-  // modules: [
-  //   '@nuxtjs/tailwindcss'
-  // ],
+  modules: [
+    '@nuxtjs/tailwindcss'
+  ],
+  css: ['~/assets/css/main.css'],
   runtimeConfig: {
     public: {
       firebaseApiKey: process.env.FIREBASE_API_KEY,
@@ -18,11 +18,11 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      title: 'Bahoot - Bahar için özel veda oyunu 💕',
+      title: 'Bahoot - A Farewell Game for Bahar 💕',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { hid: 'description', name: 'description', content: 'Bahar için özel olarak hazırlanmış Kahoot tarzı oyun' }
+        { hid: 'description', name: 'description', content: 'A special Kahoot-style game created for Bahar' }
       ]
     }
   }
