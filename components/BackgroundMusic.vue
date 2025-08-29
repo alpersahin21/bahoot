@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute } from 'nuxt/app'
 
 const props = defineProps({
@@ -88,7 +88,8 @@ const trackMap = {
 }
 
 const getCurrentAudio = () => {
-  const trackRef = trackMap[props.gameState] || 'lobbyMusic'
+  // Default to lobby if gameState is undefined or not in trackMap
+  const trackRef = trackMap[props.gameState || 'lobby'] || 'lobbyMusic'
   return eval(trackRef).value
 }
 
@@ -104,19 +105,28 @@ const stopAllMusic = () => {
 const playCurrentTrack = async () => {
   if (!isPlaying.value) return
   
+  const gameState = props.gameState || 'lobby'
+  console.log('Playing track for state:', gameState)
   stopAllMusic()
+  
   const audio = getCurrentAudio()
   
   if (audio) {
     audio.volume = volume.value / 100
+    audio.currentTime = 0 // Reset to beginning
     try {
-      await audio.play()
-      currentTrack.value = props.gameState
+      const playPromise = audio.play()
+      if (playPromise !== undefined) {
+        await playPromise
+        console.log('Successfully playing:', gameState)
+      }
     } catch (error) {
       console.warn('Could not play music:', error)
       // Fallback: user needs to interact first
       isPlaying.value = false
     }
+  } else {
+    console.warn('No audio element found for state:', gameState)
   }
 }
 
@@ -153,11 +163,19 @@ const handleMusicError = (error) => {
 }
 
 // Watch for game state changes
-watch(() => props.gameState, async (newState) => {
-  if (isPlaying.value && newState !== currentTrack.value) {
+watch(() => props.gameState, async (newState, oldState) => {
+  console.log('Music state changed:', oldState, '->', newState)
+  
+  // Always update current track to match game state (default to lobby if undefined)
+  const normalizedState = newState || 'lobby'
+  currentTrack.value = normalizedState
+  
+  // If music is playing, switch to the appropriate track
+  if (isPlaying.value) {
+    console.log('Music is playing, switching to track for state:', normalizedState)
     await playCurrentTrack()
   }
-})
+}, { immediate: true })
 
 // Load saved preferences
 onMounted(() => {
@@ -179,6 +197,11 @@ onMounted(() => {
       audioRef.value.volume = volume.value / 100
     }
   })
+  
+  // Start playing if music was enabled and we have a valid game state
+  if (isPlaying.value && props.gameState) {
+    nextTick(() => playCurrentTrack())
+  }
 })
 
 // Cleanup
@@ -202,10 +225,10 @@ defineExpose({
   z-index: 10000;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  padding: 12px 16px;
+  padding: 6px 8px;
   border-radius: 25px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   border: 2px solid rgba(255, 255, 255, 0.5);
@@ -215,14 +238,14 @@ defineExpose({
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border: none;
   border-radius: 50%;
-  width: 48px;
-  height: 48px;
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 20px;
+  font-size: 12px;
   color: white;
   box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
 }
@@ -245,7 +268,7 @@ defineExpose({
   display: flex;
   align-items: center;
   gap: 8px;
-  min-width: 120px;
+  min-width: 60px;
 }
 
 .volume-slider {
@@ -259,8 +282,8 @@ defineExpose({
 }
 
 .volume-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
   appearance: none;
+  -webkit-appearance: none;
   width: 18px;
   height: 18px;
   border-radius: 50%;

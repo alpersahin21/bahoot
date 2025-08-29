@@ -1,0 +1,21 @@
+# Videos Directory
+
+This directory contains video files for quiz questions.
+
+## Supported formats:
+
+- MP4 (recommended)
+- WebM
+- OGV
+
+## File naming:
+
+- Use descriptive names that match the video property in questions.ts
+- Keep file sizes reasonable for web delivery
+- Consider video compression for better performance
+
+## Examples:
+
+- bahar-travel.mp4
+- bahar-dancing.mp4
+- bahar-smile.mp4

@@ -3,24 +3,28 @@
     <div class="max-w-md w-full space-y-8">
       <!-- Header -->
       <div class="text-center">
-        <h1 class="text-6xl font-bold text-white mb-4">
-          🎯 Bahoot
-        </h1>
-        <p class="text-xl text-white/90 mb-8">
-          A farewell game for our dear friend Bahar 💕
+        <!-- Homepage Photo -->
+        <div class="mb-4 flex justify-center">
+          <img 
+            src="/assets/photos/homepage-photo.jpeg" 
+            alt="Bahar" 
+            class="w-56 h-56 sm:w-32 sm:h-32 md:w-40 md:h-40 rounded-full photo-display border-2 border-white/20"
+            loading="lazy"
+          />
+        </div>
+        
+        <!-- Title -->
+        <div class="mb-4">
+          <BahootLogo size="large" />
+        </div>
+        <p class="text-lg sm:text-xl text-white/90 mb-6 sm:mb-8 text-center px-2">
+          BAHARI NE KADAR TANIYORSUN??? 🤔😂🎉
         </p>
       </div>
 
       <!-- Main Card -->
       <div class="card space-y-6">
-        <div class="text-center">
-          <h2 class="text-2xl font-bold text-gray-800 mb-4">
-            Welcome to Bahoot!
-          </h2>
-          <p class="text-gray-600">
-            Choose how you want to play
-          </p>
-        </div>
+
 
         <!-- Action Buttons -->
         <div class="space-y-4">
@@ -28,35 +32,36 @@
             @click="showCreateForm = true"
             class="btn-primary w-full"
           >
-            🎮 Host a Game
+            🎮 Oyun Başlat
           </button>
           
           <button 
             @click="showJoinForm = true"
             class="btn-secondary w-full"
           >
-            👥 Join Game
+            👥 Oyuna Katıl
           </button>
         </div>
 
         <!-- Create Game Form -->
         <div v-if="showCreateForm" class="space-y-4 pt-4 border-t">
-          <h3 class="font-semibold text-gray-800">Create New Game</h3>
+          <h3 class="font-semibold text-gray-800">Yeni Oyun Oluştur</h3>
           <input
             v-model="hostName"
             type="text"
-            placeholder="Your name"
+            placeholder="Adınız"
             class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
           <div class="flex items-center space-x-2">
-            <label class="text-sm text-gray-600">Questions:</label>
+            <label class="text-sm text-gray-600">Soru Sayısı:</label>
             <select 
               v-model="questionCount" 
               class="p-2 border rounded focus:ring-2 focus:ring-purple-500"
             >
-              <option value="3">3 Questions</option>
-              <option value="5">5 Questions</option>
-              <option value="8">All 8 Questions</option>
+              <option value="3">3 Soru</option>
+              <option value="5">5 Soru</option>
+              <option value="10">10 Soru</option>
+              <option :value="totalQuestions">Tüm {{ totalQuestions }} Soru</option>
             </select>
           </div>
           <div class="flex space-x-2">
@@ -65,7 +70,7 @@
               :disabled="!hostName || creating"
               class="btn-primary flex-1 disabled:opacity-50"
             >
-              {{ creating ? '⏳ Creating...' : '🚀 Create Game' }}
+              {{ creating ? '⏳ Oluşturuluyor...' : '🚀 Oyunu Başlat' }}
             </button>
             <button 
               @click="showCreateForm = false"
@@ -78,18 +83,18 @@
 
         <!-- Join Game Form -->
         <div v-if="showJoinForm" class="space-y-4 pt-4 border-t">
-          <h3 class="font-semibold text-gray-800">Join Existing Game</h3>
+          <h3 class="font-semibold text-gray-800">Mevcut Oyuna Katıl</h3>
           <input
             v-model="roomCode"
             type="text"
-            placeholder="Room Code (e.g. ABC123)"
+            placeholder="Oda Kodu (örn. ABC123)"
             class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent uppercase"
             @input="roomCode = roomCode.toUpperCase()"
           />
           <input
             v-model="playerName"
             type="text"
-            placeholder="Your nickname"
+            placeholder="Takma adınız"
             class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
           <div class="flex space-x-2">
@@ -98,7 +103,7 @@
               :disabled="!roomCode || !playerName || joining"
               class="btn-primary flex-1 disabled:opacity-50"
             >
-              {{ joining ? '⏳ Joining...' : '🎯 Join Game' }}
+              {{ joining ? '⏳ Katılıyor...' : '🎯 Oyuna Katıl' }}
             </button>
             <button 
               @click="showJoinForm = false"
@@ -117,16 +122,17 @@
 
       <!-- Footer -->
       <div class="text-center text-white/70 text-sm">
-        Made with 💕 for Bahar's farewell
+        Alper Şahin & Kemal Serbay Uğur sizlere özenle sunar 💕
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { navigateTo } from 'nuxt/app'
 import { useFirebase } from '../composables/useFirebase'
+import { questions } from '../data/questions'
 
 const { createRoom, joinRoom } = useFirebase()
 
@@ -141,6 +147,9 @@ const creating = ref(false)
 const joining = ref(false)
 const error = ref('')
 
+// Computed
+const totalQuestions = computed(() => questions.length)
+
 // Methods
 const createGame = async () => {
   if (!hostName.value) return
@@ -152,7 +161,7 @@ const createGame = async () => {
     const code = await createRoom(hostName.value, questionCount.value)
     await navigateTo(`/host/${code}`)
   } catch (err) {
-    error.value = 'Failed to create game. Please try again.'
+    error.value = 'Oyun oluşturulamadı. Lütfen tekrar deneyin.'
     console.error(err)
   } finally {
     creating.value = false
@@ -169,7 +178,7 @@ const joinGame = async () => {
     const playerId = await joinRoom(roomCode.value, playerName.value)
     await navigateTo(`/play/${roomCode.value}?playerId=${playerId}`)
   } catch (err) {
-    error.value = 'Failed to join game. Check the room code and try again.'
+    error.value = 'Oyuna katılınamadı. Oda kodunu kontrol edip tekrar deneyin.'
     console.error(err)
   } finally {
     joining.value = false

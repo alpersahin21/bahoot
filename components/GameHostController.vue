@@ -16,22 +16,16 @@
 
       <!-- Question Content -->
       <div v-if="currentQuestion" class="text-center">
-        <!-- Question Background -->
-        <div 
-          class="w-full h-48 bg-gradient-to-br from-purple-400 to-pink-400 rounded-xl mb-6 flex items-center justify-center text-white relative overflow-hidden"
-          :style="backgroundImageStyle"
-        >
-          <div class="absolute inset-0 bg-black/40"></div>
-          <div class="relative z-10 text-center p-6">
-            <h2 class="text-2xl font-bold mb-4">{{ currentQuestion.text }}</h2>
-            <div class="text-sm opacity-90">
-              Photo: {{ currentQuestion.photo }}
-            </div>
-          </div>
+        <!-- Question Media -->
+        <div class="mb-6">
+          <QuestionMedia 
+            :question="currentQuestion" 
+            :show-media-info="true"
+          />
         </div>
 
         <!-- Answer Options Preview -->
-        <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
           <div 
             v-for="(answer, index) in currentQuestion.answers"
             :key="index"
@@ -44,7 +38,18 @@
             ]"
           >
             <div class="flex items-center justify-center">
-              <span class="mr-2">{{ index + 1 }}.</span>
+              <div class="w-6 h-6 bg-white/20 flex items-center justify-center mr-2 text-sm"
+                   :class="{
+                     'triangle-shape': index === 0,
+                     'diamond-shape': index === 1,
+                     'circle-shape rounded-full': index === 2,
+                     'square-shape': index === 3
+                   }">
+                <span v-if="index === 0" class="triangle-icon text-sm">▲</span>
+                <span v-else-if="index === 1" class="diamond-icon text-sm">♦</span>
+                <span v-else-if="index === 2" class="circle-icon text-sm">●</span>
+                <span v-else-if="index === 3" class="square-icon text-sm">■</span>
+              </div>
               {{ answer }}
             </div>
           </div>
@@ -207,15 +212,7 @@ const isLastQuestion = computed(() => {
   return props.gameState.currentQuestion >= props.gameState.questionCount - 1
 })
 
-const backgroundImageStyle = computed(() => {
-  if (!currentQuestion.value?.photo) return {}
-  
-  return {
-    backgroundImage: `url('/assets/photos/${currentQuestion.value.photo}'), linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center'
-  }
-})
+
 
 // Methods
 const handleNextQuestion = () => {
