@@ -5,8 +5,11 @@
       <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
         <div class="flex justify-between items-center">
           <div>
-            <h1 class="text-3xl font-bold text-gray-800">🎯 Bahoot Host</h1>
-            <p class="text-gray-600">Room Code: <span class="font-mono text-2xl font-bold text-purple-600">{{ roomCode }}</span></p>
+            <div class="flex items-center gap-2">
+              <BahootLogo size="medium" variant="dark" />
+              <span class="text-lg font-semibold text-gray-600">Host</span>
+            </div>
+            <p class="text-gray-600">Oda Kodu: <span class="font-mono text-2xl font-bold text-purple-600">{{ roomCode }}</span></p>
           </div>
           <div class="text-right">
             <div class="text-sm text-gray-500">Players Online</div>
@@ -26,12 +29,12 @@
       <div v-else-if="gameState?.status === 'waiting'" class="space-y-6">
         <div class="card">
           <div class="text-center mb-6">
-            <h2 class="text-2xl font-bold text-gray-800 mb-2">Waiting for Players</h2>
-            <p class="text-gray-600">Share the room code with players to join!</p>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Oyuncular Bekleniyor</h2>
+            <p class="text-gray-600">Oyuncuların katılması için oda kodunu paylaşın!</p>
           </div>
           
           <div class="bg-purple-50 rounded-xl p-6 text-center mb-6">
-            <div class="text-lg text-purple-600 font-semibold mb-2">Room Code</div>
+            <div class="text-lg text-purple-600 font-semibold mb-2">Oda Kodu</div>
             <div class="text-5xl font-bold text-purple-700 font-mono tracking-wider mb-4">
               {{ roomCode }}
             </div>
@@ -39,7 +42,7 @@
               @click="copyRoomCode"
               class="btn-secondary"
             >
-              {{ copied ? '✅ Copied!' : '📋 Copy Code' }}
+              {{ copied ? '✅ Kopyalandı!' : '📋 Kodu Kopyala' }}
             </button>
           </div>
 
@@ -48,15 +51,15 @@
             :disabled="playersCount === 0"
             class="btn-primary w-full disabled:opacity-50"
           >
-            🚀 Start Game ({{ playersCount }} players)
+            🚀 Oyunu Başlat ({{ playersCount }} oyuncu)
           </button>
         </div>
 
         <!-- Players List -->
         <div class="card">
-          <h3 class="text-xl font-bold text-gray-800 mb-4">👥 Players Joined</h3>
+          <h3 class="text-xl font-bold text-gray-800 mb-4">👥 Katılan Oyuncular</h3>
           <div v-if="playersCount === 0" class="text-center text-gray-500 py-8">
-            No players yet. Share the room code!
+            Henüz oyuncu yok. Oda kodunu paylaşın!
           </div>
           <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div 
@@ -69,7 +72,7 @@
               </div>
               <div>
                 <div class="font-semibold text-gray-800">{{ player.nickname }}</div>
-                <div class="text-sm text-gray-500">Joined {{ formatTime(player.joinedAt) }}</div>
+                <div class="text-sm text-gray-500">Katıldı: {{ formatTime(player.joinedAt) }}</div>
               </div>
             </div>
           </div>
@@ -94,13 +97,17 @@
         />
         
         <div class="card text-center">
-          <h2 class="text-2xl font-bold text-gray-800 mb-4">🎉 Game Complete!</h2>
-          <p class="text-gray-600 mb-6">Thanks for playing Bahoot!</p>
+          <h2 class="text-2xl font-bold text-gray-800 mb-4">🎉 Oyun Tamamlandı!</h2>
+          <p class="text-gray-600 mb-6">Bahoot oynadığınız için teşekkürler!</p>
+        </div>
+        
+        <!-- Back to Home Button -->
+        <div class="text-center">
           <button 
             @click="navigateTo('/')"
             class="btn-primary"
           >
-            🏠 Back to Home
+            🏠 Ana Sayfaya Dön
           </button>
         </div>
       </div>
@@ -109,7 +116,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute, navigateTo, createError } from 'nuxt/app'
 import { questions, getRandomQuestions } from '../../data/questions'
 import { useGameRoom } from '../../composables/useGameRoom'
@@ -156,9 +163,33 @@ const formatTime = (timestamp: number) => {
   return new Date(timestamp).toLocaleTimeString()
 }
 
+// Watch for game state changes to update music
+watch(() => gameState.value?.status, (status) => {
+  if (process.client && (window as any).updateMusicState) {
+    if (status === 'finished') {
+      (window as any).updateMusicState('results')
+    } else if (status === 'playing') {
+      (window as any).updateMusicState('playing')
+    } else if (status === 'waiting') {
+      (window as any).updateMusicState('waiting')
+    }
+  }
+})
+
 // Lifecycle
 onMounted(() => {
   gameRoom.connect()
+  
+  // Initialize music state based on current game status
+  if (process.client && (window as any).updateMusicState && gameState.value?.status) {
+    if (gameState.value.status === 'finished') {
+      (window as any).updateMusicState('results')
+    } else if (gameState.value.status === 'playing') {
+      (window as any).updateMusicState('playing')
+    } else {
+      (window as any).updateMusicState('waiting')
+    }
+  }
 })
 
 onUnmounted(() => {

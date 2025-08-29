@@ -2,15 +2,15 @@
   <div class="card">
     <div class="text-center mb-6">
       <h3 class="text-2xl font-bold text-gray-800 mb-2">
-        {{ final ? '🏆 Final Results' : '📊 Current Leaderboard' }}
+        {{ final ? '🏆 Final Sonuçlar' : '📊 Anlık Sıralama' }}
       </h3>
       <p class="text-gray-600">
-        {{ final ? 'Thanks for playing Bahoot!' : 'Live standings' }}
+        {{ final ? 'BAKALIM BAHARI ENNNNNN ÇOK TANIYAN KİŞİ KİMMİŞŞŞŞ 🙈' : 'Baharı ENNNNNNN Çok Seven Kişiler: ' }}
       </p>
     </div>
 
     <div v-if="players.length === 0" class="text-center text-gray-500 py-8">
-      No players yet
+      Henüz oyuncu yok
     </div>
 
     <div v-else class="space-y-3">
@@ -38,7 +38,7 @@
               {{ player.nickname }}
             </div>
             <div v-if="player.responseTime && !final" class="text-sm text-gray-500">
-              ⏱️ {{ player.responseTime.toFixed(1) }}s response
+              ⏱️ {{ player.responseTime.toFixed(1) }}s yanıt
             </div>
           </div>
         </div>
@@ -49,7 +49,7 @@
             {{ player.score }}
           </div>
           <div class="text-sm text-gray-500">
-            points
+            puan
           </div>
         </div>
       </div>
@@ -60,10 +60,10 @@
       <div class="bg-gradient-to-r from-yellow-400 to-orange-500 rounded-xl p-6 text-white">
         <div class="text-3xl mb-2">🎉</div>
         <div class="text-xl font-bold mb-1">
-          Congratulations {{ players[0].nickname }}!
+          Tebrikler {{ players[0].nickname }}!
         </div>
         <div class="text-lg opacity-90">
-          Winner of Bahoot for Bahar! 💕
+          BAHARI ENNN İYİ TANIYAN KİŞİ SENSİNNNN 💕
         </div>
       </div>
     </div>

@@ -2,15 +2,17 @@
   <div class="min-h-screen p-4">
     <div class="max-w-2xl mx-auto">
       <!-- Header -->
-      <div class="bg-white rounded-2xl shadow-xl p-4 mb-6">
+      <div class="bg-white rounded-2xl shadow-xl p-3 mb-4">
         <div class="flex justify-between items-center">
           <div>
-            <h1 class="text-2xl font-bold text-gray-800">🎯 Bahoot</h1>
-            <p class="text-sm text-gray-600">Room: {{ roomCode }}</p>
+            <div>
+              <BahootLogo size="small" variant="dark" />
+            </div>
+            <p class="text-sm text-gray-600">Oda: {{ roomCode }}</p>
           </div>
           <div class="text-right" v-if="currentPlayer">
             <div class="text-sm text-gray-500">{{ currentPlayer.nickname }}</div>
-            <div class="text-xl font-bold text-purple-600">{{ currentPlayer.score }} pts</div>
+            <div class="text-xl font-bold text-purple-600">Skor: {{ currentPlayer.score }}</div>
           </div>
         </div>
       </div>
@@ -18,34 +20,34 @@
       <!-- Connection Status -->
       <div v-if="!gameRoom.isConnected" class="card text-center">
         <div class="text-gray-500">
-          ⏳ Connecting to game...
+          ⏳ Oyuna bağlanılıyor...
         </div>
       </div>
 
       <!-- Game not found -->
       <div v-else-if="!gameState" class="card text-center">
         <div class="text-red-500 mb-4">
-          ❌ Game room not found
+          ❌ Oyun odası bulunamadı
         </div>
         <button 
           @click="navigateTo('/')"
           class="btn-primary"
         >
-          🏠 Back to Home
+          🏠 Ana Sayfaya Dön
         </button>
       </div>
 
       <!-- Waiting for game to start -->
       <div v-else-if="gameState.status === 'waiting'" class="card text-center">
         <h2 class="text-2xl font-bold text-gray-800 mb-4">
-          🎮 Waiting for Game to Start
+          🎮 Oyunun başlaması bekleniyor...
         </h2>
         <p class="text-gray-600 mb-6">
-          The host will start the game soon!
+          HADİ ABİ İNSANLAR GELSİN DE BAŞLAYALIM LETS GOOOO 🔥🔥🔥
         </p>
         <div class="bg-purple-50 rounded-xl p-4">
           <div class="text-lg font-semibold text-purple-700 mb-2">
-            Players in Room: {{ playersCount }}
+            Baharın en yakın arkadaşları: {{ playersCount }}
           </div>
           <div class="flex flex-wrap justify-center gap-2">
             <span 
@@ -57,16 +59,36 @@
             </span>
           </div>
         </div>
+
+        <!-- Waiting Photos -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+          <div class="flex justify-center">
+            <img 
+              src="/assets/photos/waiting-photo1.jpeg" 
+              alt="Bahar Photo 1" 
+              class="w-48 h-48 sm:w-40 sm:h-40 md:w-48 md:h-48 rounded-xl photo-display border-2 border-white/20"
+              loading="lazy"
+            />
+          </div>
+          <div class="flex justify-center">
+            <img 
+              src="/assets/photos/waiting-photo2.jpeg" 
+              alt="Bahar Photo 2" 
+              class="w-48 h-48 sm:w-40 sm:h-40 md:w-48 md:h-48 rounded-xl photo-display border-2 border-white/20"
+              loading="lazy"
+            />
+          </div>
+        </div>
       </div>
 
       <!-- Game Playing -->
-      <div v-else-if="gameState.status === 'playing'" class="space-y-6">
+      <div v-else-if="gameState.status === 'playing'" class="space-y-4">
         <!-- Current Question -->
         <div v-if="currentQuestion" class="card">
           <!-- Question Counter -->
-          <div class="text-center mb-4">
+          <div class="text-center mb-3 pt-2">
             <div class="text-sm text-gray-500">
-              Question {{ gameState.currentQuestion + 1 }} of {{ gameState.questionCount }}
+              Soru {{ gameState.currentQuestion + 1 }} / {{ gameState.questionCount }}
             </div>
             <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
               <div 
@@ -76,18 +98,20 @@
             </div>
           </div>
 
-          <!-- Question Background Image -->
-          <div 
-            class="w-full h-40 bg-gradient-to-br from-purple-400 to-pink-400 rounded-xl mb-6 flex items-center justify-center text-white"
-            :style="backgroundImageStyle"
-          >
-            <div class="text-center p-4 bg-black/30 rounded-lg backdrop-blur-sm">
-              <h2 class="text-xl font-bold">{{ currentQuestion.text }}</h2>
-            </div>
+          <!-- Question Text -->
+          <div class="text-center mb-4">
+            <h2 class="text-xl md:text-2xl font-bold text-gray-800 px-4">
+              {{ currentQuestion.text }}
+            </h2>
+          </div>
+
+          <!-- Question Media -->
+          <div class="mb-4">
+            <QuestionMedia :question="currentQuestion" :hide-question-text="true" />
           </div>
 
           <!-- Timer -->
-          <div v-if="timeLeft > 0 && !currentPlayer?.hasAnswered" class="text-center mb-6">
+          <div v-if="timeLeft > 0 && !currentPlayer?.hasAnswered" class="text-center mb-4">
             <div class="text-2xl font-bold text-gray-800 mb-2">⏰ {{ timeLeft }}s</div>
             <div class="w-full bg-gray-200 rounded-full h-3">
               <div 
@@ -98,56 +122,65 @@
           </div>
 
           <!-- Answer Status -->
-          <div v-if="currentPlayer?.hasAnswered" class="text-center mb-6">
+          <div v-if="currentPlayer?.hasAnswered" class="text-center mb-4">
             <div v-if="currentPlayer.isCorrect === true" class="text-green-600 font-bold text-xl mb-2">
-              ✅ Correct! +{{ currentPlayer.questionPoints }} points
+              ✅ Doğru! +{{ currentPlayer.questionPoints }} puan
             </div>
             <div v-else-if="currentPlayer.isCorrect === false" class="text-red-600 font-bold text-xl mb-2">
-              ❌ Incorrect! 0 points
+              ❌ Yanlış! 0 puan
             </div>
             <div v-else class="text-blue-600 font-bold text-xl mb-2">
-              📤 Answer Submitted!
+              📤 Cevap Gönderildi!
             </div>
             <div class="text-gray-600">
-              Waiting for other players...
+              Diğer oyuncular bekleniyor...
             </div>
           </div>
 
           <!-- Answer Options -->
-          <div v-else-if="timeLeft > 0" class="grid grid-cols-1 gap-3">
+          <div v-else-if="timeLeft > 0" class="grid grid-cols-2 gap-3">
             <button
               v-for="(answer, index) in currentQuestion.answers"
               :key="index"
               @click="submitAnswer(index)"
               :class="[
-                'answer-btn',
+                'answer-btn text-center',
                 index === 0 ? 'answer-red' : '',
                 index === 1 ? 'answer-blue' : '',
                 index === 2 ? 'answer-yellow' : '',
                 index === 3 ? 'answer-green' : ''
               ]"
             >
-              <div class="flex items-center">
-                <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center mr-3 font-bold">
-                  {{ index + 1 }}
+              <div class="flex flex-col items-center justify-center p-2">
+                <div class="w-8 h-8 bg-white/20 flex items-center justify-center mb-2 font-bold text-lg"
+                     :class="{
+                       'triangle-shape': index === 0,
+                       'diamond-shape': index === 1,
+                       'circle-shape rounded-full': index === 2,
+                       'square-shape': index === 3
+                     }">
+                  <span v-if="index === 0" class="triangle-icon">▲</span>
+                  <span v-else-if="index === 1" class="diamond-icon">♦</span>
+                  <span v-else-if="index === 2" class="circle-icon">●</span>
+                  <span v-else-if="index === 3" class="square-icon">■</span>
                 </div>
-                {{ answer }}
+                <span class="text-sm md:text-base leading-tight">{{ answer }}</span>
               </div>
             </button>
           </div>
 
           <!-- Time's Up -->
           <div v-else class="text-center text-red-600 font-bold">
-            ⏰ Time's Up!
+            ⏰ Süre Doldu!
           </div>
         </div>
 
         <!-- Show Results -->
         <div v-if="gameState.showResults && currentQuestion" class="card">
           <div class="text-center mb-6">
-            <h3 class="text-xl font-bold text-gray-800 mb-2">📊 Question Results</h3>
+            <h3 class="text-xl font-bold text-gray-800 mb-2"> Soru Sonuçları</h3>
             <div class="text-lg text-green-600 font-semibold">
-              ✅ Correct Answer: {{ currentQuestion.answers[currentQuestion.correct] }}
+              ✅ Doğru Cevap: {{ currentQuestion.answers[currentQuestion.correct] }}
             </div>
           </div>
           
@@ -160,22 +193,33 @@
       <div v-else-if="gameState.status === 'finished'" class="space-y-6">
         <div class="card text-center">
           <h2 class="text-3xl font-bold text-gray-800 mb-4">
-            🎉 Game Complete!
+            🎉 Oyun Tamamlandı!
           </h2>
           <p class="text-lg text-gray-600 mb-6">
-            Thanks for playing Bahoot for Bahar! 💕
+            Bahar için Bahoot oynadığınız için teşekkürler! 💕
           </p>
+          
+          <!-- End Game Photo -->
+          <div class="flex justify-center mb-6">
+            <img 
+              src="/assets/photos/endgame-photo.jpeg" 
+              alt="Bahar Endgame Photo" 
+              class="w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-xl photo-display border-2 border-purple-200/50"
+              loading="lazy"
+            />
+          </div>
         </div>
 
         <!-- Final Results -->
         <GameLeaderboard :players="players" :final="true" />
 
-        <div class="card text-center">
+        <!-- Back to Home Button -->
+        <div class="text-center">
           <button 
             @click="navigateTo('/')"
             class="btn-primary"
           >
-            🏠 Play Again
+            🏠 Ana Sayfaya Dön
           </button>
         </div>
       </div>
@@ -215,17 +259,7 @@ const currentQuestion = computed(() => {
   return gameState.value.questions[gameState.value.currentQuestion]
 })
 
-const backgroundImageStyle = computed(() => {
-  if (!currentQuestion.value?.photo) return {}
-  
-  // For now, use a placeholder gradient
-  // In production, you'd load the actual photo from assets
-  return {
-    backgroundImage: `url('/assets/photos/${currentQuestion.value.photo}'), linear-gradient(135deg, #667eea 0%, #764ba2 100%)`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center'
-  }
-})
+
 
 // Methods
 const submitAnswer = async (answerIndex: number) => {
@@ -265,6 +299,26 @@ const stopTimer = () => {
 }
 
 // Watch for game state changes
+watch(() => gameState.value?.showResults, (showResults) => {
+  if (process.client && (window as any).updateMusicState) {
+    if (showResults) {
+      (window as any).updateMusicState('results')
+    } else {
+      (window as any).updateMusicState('playing')
+    }
+  }
+})
+
+watch(() => gameState.value?.status, (status) => {
+  if (process.client && (window as any).updateMusicState) {
+    if (status === 'finished') {
+      (window as any).updateMusicState('results')
+    } else if (status === 'playing') {
+      (window as any).updateMusicState('playing')
+    }
+  }
+})
+
 watch(() => gameState.value?.currentQuestion, () => {
   stopTimer()
   if (gameState.value?.status === 'playing' && !gameState.value?.showResults && gameState.value?.questionStartTime) {

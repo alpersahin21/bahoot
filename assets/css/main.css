@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-gradient-to-br from-purple-600 to-pink-600 min-h-screen font-sans;
+    @apply bg-gradient-to-br from-blue-600 to-purple-600 min-h-screen font-sans;
   }
 }
 
@@ -18,11 +18,11 @@
   }
   
   .card {
-    @apply bg-white rounded-2xl shadow-xl p-8;
+    @apply bg-white rounded-2xl shadow-xl p-6;
   }
   
   .answer-btn {
-    @apply w-full p-4 rounded-xl font-semibold text-left transition-all duration-200 transform hover:scale-105 shadow-md;
+    @apply w-full p-4 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-md min-h-[80px] flex items-center justify-center;
   }
   
   .answer-red {
@@ -39,5 +39,37 @@
   
   .answer-green {
     @apply bg-green-500 text-white hover:bg-green-400;
+  }
+
+  /* Kahoot-style solid shape icons */
+  .triangle-shape {
+    @apply rounded-none;
+    background-color: #ffffff !important;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  }
+  
+  .diamond-shape {
+    background-color: #ffffff !important;
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+  
+  .circle-shape {
+    @apply rounded-full;
+    background-color: #ffffff !important;
+  }
+  
+  .square-shape {
+    @apply rounded-sm;
+    background-color: #ffffff !important;
+  }
+
+  .triangle-icon, .diamond-icon, .circle-icon, .square-icon {
+    @apply opacity-0; /* Hide the text icons since we're using solid shapes */
+  }
+
+  /* Photo display improvements */
+  .photo-display {
+    @apply object-contain bg-white/5 shadow-sm;
+    filter: brightness(1.05) contrast(1.02);
   }
 }
