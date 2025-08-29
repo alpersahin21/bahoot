@@ -15,7 +15,7 @@
         
         <!-- Title -->
         <div class="mb-4">
-          <BahootLogo size="large" />
+          <BahootLogo size="large" :animated="false" variant="white" />
         </div>
         <p class="text-lg sm:text-xl text-white/90 mb-6 sm:mb-8 text-center px-2">
           BAHARI NE KADAR TANIYORSUN??? 🤔😂🎉

@@ -6,7 +6,7 @@
         <div class="flex justify-between items-center">
           <div>
             <div>
-              <BahootLogo size="small" variant="dark" />
+              <BahootLogo size="small" :animated="false" variant="purple" />
             </div>
             <p class="text-sm text-gray-600">Oda: {{ roomCode }}</p>
           </div>
@@ -298,26 +298,14 @@ const stopTimer = () => {
   }
 }
 
-// Watch for game state changes
-watch(() => gameState.value?.showResults, (showResults) => {
+// Watch for game state changes - DON'T change music on showResults
+// Only change music when game status actually changes to avoid
+// switching to results music during intermediate round results
+watch(gameState, (newState) => {
   if (process.client && (window as any).updateMusicState) {
-    if (showResults) {
-      (window as any).updateMusicState('results')
-    } else {
-      (window as any).updateMusicState('playing')
-    }
+    (window as any).updateMusicState(newState)
   }
-})
-
-watch(() => gameState.value?.status, (status) => {
-  if (process.client && (window as any).updateMusicState) {
-    if (status === 'finished') {
-      (window as any).updateMusicState('results')
-    } else if (status === 'playing') {
-      (window as any).updateMusicState('playing')
-    }
-  }
-})
+}, { deep: true })
 
 watch(() => gameState.value?.currentQuestion, () => {
   stopTimer()

@@ -6,7 +6,7 @@
         <div class="flex justify-between items-center">
           <div>
             <div class="flex items-center gap-2">
-              <BahootLogo size="medium" variant="dark" />
+              <BahootLogo size="medium" :animated="false" variant="purple" />
               <span class="text-lg font-semibold text-gray-600">Host</span>
             </div>
             <p class="text-gray-600">Oda Kodu: <span class="font-mono text-2xl font-bold text-purple-600">{{ roomCode }}</span></p>
@@ -164,32 +164,15 @@ const formatTime = (timestamp: number) => {
 }
 
 // Watch for game state changes to update music
-watch(() => gameState.value?.status, (status) => {
+watch(gameState, (newState) => {
   if (process.client && (window as any).updateMusicState) {
-    if (status === 'finished') {
-      (window as any).updateMusicState('results')
-    } else if (status === 'playing') {
-      (window as any).updateMusicState('playing')
-    } else if (status === 'waiting') {
-      (window as any).updateMusicState('waiting')
-    }
+    (window as any).updateMusicState(newState)
   }
-})
+}, { deep: true })
 
 // Lifecycle
 onMounted(() => {
   gameRoom.connect()
-  
-  // Initialize music state based on current game status
-  if (process.client && (window as any).updateMusicState && gameState.value?.status) {
-    if (gameState.value.status === 'finished') {
-      (window as any).updateMusicState('results')
-    } else if (gameState.value.status === 'playing') {
-      (window as any).updateMusicState('playing')
-    } else {
-      (window as any).updateMusicState('waiting')
-    }
-  }
 })
 
 onUnmounted(() => {
